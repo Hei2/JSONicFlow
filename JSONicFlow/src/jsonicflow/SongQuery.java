@@ -16,8 +16,8 @@ import java.util.HashMap;
  *
  * @author Keenan
  */
-public class main {
-
+public class SongQuery
+{
     final static String apiKey = "ef4ce04f5581e3cb6736e4ada4077c15";
     
     /**
@@ -25,11 +25,15 @@ public class main {
      */
     public static void main(String[] args)
     {
-        
+        //Remember to pass queries surrounded by quotes.
+        String query = args[0];
+        HashMap<String, String> songInfo = getSongInfo(query);
+        buildWebPage(songInfo);
     }
 
     public static HashMap<String, String> getSongInfo(String query)
     {
+        query = query.replaceAll("[^\\x00-\\x7F]", "");
         query = query.trim();
         query = query.replaceAll("\\s+", "+"); //Replace strings of spaces with a single '+'
         query = "http://tinysong.com/b/" + query + "?format=json&key=" + apiKey;
@@ -104,5 +108,37 @@ public class main {
             System.out.print("Caught IOException");
         }
         return null;
+    }
+    
+    private static void buildWebPage(HashMap<String, String> songInfo)
+    {
+        System.out.print("<HTML>" +
+        "<BODY bgcolor=\"Black\">" +
+        "<table border=\"1\" bgcolor=\"White\">" +
+        "	<tr>" +
+        "		<td>Song:</td>" +
+        "		<td>" + songInfo.get("SongName") + "</td>" +
+        "	</tr>" +
+        "	<tr>" +
+        "		<td>Artist:</td>" +
+        "		<td>" + songInfo.get("ArtistName") + "</td>" +
+        "	</tr>" +
+        "	<tr>" +
+        "		<td>Album:</td>" +
+        "		<td>" + songInfo.get("AlbumName") + "</td>" +
+        "	</tr>" +
+        "</table><BR>" +
+
+        "<object width=\"250\" height=\"40\">" +
+        "	<param name=\"movie\" value=\"http://grooveshark.com/songWidget.swf\">" +
+        "	<param name=\"wmode\" value=\"window\">" +
+        "	<param name=\"allowScriptAccess\" value=\"always\">" +
+        "	<param name=\"flashvars\" value=\"hostname=cowbell.grooveshark.com&amp;songIDs=" + songInfo.get("SongID") + "&amp;style=metal&amp;p=1\">" +
+        "	<embed src=\"http://grooveshark.com/songWidget.swf\" type=\"application/x-shockwave-flash\" width=\"250\" height=\"40\" flashvars=\"hostname=cowbell.grooveshark.com&amp;songIDs=" + songInfo.get("SongID") + "&amp;style=metal&amp;p=1\" allowscriptaccess=\"always\" wmode=\"window\">" +
+        "</object><BR>" +
+
+        "<a href=\"FirstPage.html\"><button type=\"button\">Back</button></a></center>" +
+        "</BODY>" +
+        "</HTML>");
     }
 }
